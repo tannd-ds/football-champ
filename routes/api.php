@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+//Season route
 Route::get('/season', 'App\Http\Controllers\SeasonController@index');
 
 Route::post('/season/add', 'App\Http\Controllers\SeasonController@add');
@@ -27,3 +27,6 @@ Route::get('/season/edit/{id}', 'App\Http\Controllers\SeasonController@edit_seas
 Route::post('/season/update/{id}', 'App\Http\Controllers\SeasonController@update');
 
 Route::get('/season/delete/{id}', 'App\Http\Controllers\SeasonController@delete');
+// Team route
+Route::get('/team', 'App\Http\Controllers\TeamController@index');
+Route::post('/team/add', 'App\Http\Controllers\TeamController@add');
