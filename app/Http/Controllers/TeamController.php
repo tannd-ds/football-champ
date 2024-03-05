@@ -33,6 +33,12 @@ class TeamController extends Controller
             return response()->json(['error' => 'Failed to add Team: ' . $e->getMessage()], 500);
         }
     }
+    //edit team
+    public function edit_team($id)
+    {
+        $edit_team = DB::table('detailteam')->where('id', $id)->get();
+        return response()->json($edit_team);
+    }
     //update team
     public function update(Request $request, $id){
         try {
