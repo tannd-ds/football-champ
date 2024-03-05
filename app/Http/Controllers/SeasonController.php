@@ -15,10 +15,10 @@ class SeasonController extends Controller
     public function add(Request $request)
     {
         try {
-            $season_name = $request->input('season_name');
+            $season_name = $request->input('name_season');
             $start_date = $request->input('start_date');
             $end_date = $request->input('end_date');
-            $quantity = $request->input('quantity');
+            $quantity = $request->input('quantity_team');
             // turn the dates into the format that the database expects
             $start_date = date('Y-m-d', strtotime($start_date));
             $end_date = date('Y-m-d', strtotime($end_date));
