@@ -21,3 +21,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/season', 'App\Http\Controllers\SeasonController@index');
 
 Route::post('/season/add', 'App\Http\Controllers\SeasonController@add');
+
+Route::get('/season/edit/{id}', 'App\Http\Controllers\SeasonController@edit_season');
+
+Route::post('/season/update/{id}', 'App\Http\Controllers\SeasonController@update');
+
+Route::get('/season/delete/{id}', 'App\Http\Controllers\SeasonController@delete');

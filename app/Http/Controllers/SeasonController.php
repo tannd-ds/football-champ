@@ -23,9 +23,9 @@ class SeasonController extends Controller
             $start_date = date('Y-m-d', strtotime($start_date));
             $end_date = date('Y-m-d', strtotime($end_date));
 
-            $data = array('name_season' => $season_name, 'start_day' => $start_date, 'end_day' => $end_date, 'quantity_team'=> $quantity);
+            $data = array('name_season' => $season_name, 'start_date' => $start_date, 'end_date' => $end_date, 'quantity_team'=> $quantity);
             DB::table('season')->insert($data);
-            return response()->json('Season added successfully');
+            return response()->json('Season added successfully', 200);
         
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to add season: ' . $e->getMessage()], 500);
@@ -40,15 +40,20 @@ class SeasonController extends Controller
     // Update be
     public function update(Request $request, $id){
         try {
-        $season_name = $request->input('season_name');
+        $season_name = $request->input('name_season');
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
-        $quantity = $request->input('quantity');
+        $quantity = $request->input('quantity_team');
         // turn the dates into the format that the database expects
         $start_date = date('Y-m-d', strtotime($start_date));
         $end_date = date('Y-m-d', strtotime($end_date));
 
-        $data = array('name_season' => $season_name, 'start_day' => $start_date, 'end_day' => $end_date, 'quantity_team'=> $quantity);
+        $data = array(
+            'name_season' => $season_name, 
+            'start_date' => $start_date, 
+            'end_date' => $end_date, 
+            'quantity_team'=> $quantity
+        );
         DB::table('season')->where('id', $id)->update($data);
         return response()->json('Season update successfully');
     } catch (\Exception $e) {
