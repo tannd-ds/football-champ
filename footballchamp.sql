@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 05, 2024 lúc 09:10 AM
+-- Thời gian đã tạo: Th3 05, 2024 lúc 10:03 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -32,9 +32,7 @@ CREATE TABLE `detailteam` (
   `name_team` varchar(255) DEFAULT NULL,
   `url_image` varchar(255) DEFAULT NULL,
   `quantity_soccer` int(11) DEFAULT NULL,
-  `name_soccer` varchar(255) DEFAULT NULL,
-  `birth_soccer` date DEFAULT NULL,
-  `category_soccer` int(11) DEFAULT NULL,
+  `established_date` date DEFAULT NULL,
   `home_court` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -66,6 +64,22 @@ CREATE TABLE `result` (
   `total` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `result`
+--
+
+INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) VALUES
+(6, 1, 1, 0, 0, 0, 0),
+(7, 1, 2, 0, 0, 1, 1);
+
+--
+-- Bẫy `result`
+--
+DELIMITER $$
+CREATE TRIGGER `insert_result` BEFORE INSERT ON `result` FOR EACH ROW SET NEW.win=0,NEW.lose=0,NEW.draw=0,NEW.total=0
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -85,6 +99,36 @@ CREATE TABLE `schedule` (
 --
 -- Bẫy `schedule`
 --
+DELIMITER $$
+CREATE TRIGGER `delete_schedule` AFTER DELETE ON `schedule` FOR EACH ROW UPDATE result
+SET win = (SELECT COUNT(*)
+           FROM schedule
+           WHERE team1_score > team2_score AND team_id_1 = old.team_id_1),
+    lose = (SELECT COUNT(*)
+            FROM schedule
+            WHERE (team1_score < team2_score AND team_id_1 = old.team_id_1)),
+    draw = (SELECT COUNT(*)
+            FROM schedule
+            WHERE (team1_score = team2_score AND team_id_1 = old.team_id_1)),
+                  total=win*3+draw
+WHERE team_id = old.team_id_1
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `delete_schedule2` AFTER DELETE ON `schedule` FOR EACH ROW UPDATE result
+SET win = (SELECT COUNT(*)
+           FROM schedule
+           WHERE team1_score > team2_score AND team_id_1 = old.team_id_2),
+    lose = (SELECT COUNT(*)
+            FROM schedule
+            WHERE (team1_score < team2_score AND team_id_1 = old.team_id_2)),
+    draw = (SELECT COUNT(*)
+            FROM schedule
+            WHERE (team1_score = team2_score AND team_id_1 = old.team_id_2)),
+                  total=win*3+draw
+WHERE team_id = old.team_id_2
+$$
+DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `insert_schedule` BEFORE INSERT ON `schedule` FOR EACH ROW SET NEW.team1_score = null, NEW.team2_score = null
 $$
@@ -168,6 +212,58 @@ CREATE TRIGGER `Delete_season_schedule` AFTER DELETE ON `season` FOR EACH ROW DE
 $$
 DELIMITER ;
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `soccer`
+--
+
+CREATE TABLE `soccer` (
+  `id` int(11) NOT NULL,
+  `name_soccer` varchar(255) NOT NULL,
+  `birthday` date NOT NULL,
+  `category` int(11) NOT NULL,
+  `team_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Bẫy `soccer`
+--
+DELIMITER $$
+CREATE TRIGGER `delete_soccer` AFTER DELETE ON `soccer` FOR EACH ROW UPDATE detailteam 
+SET quantity_soccer = (SELECT COUNT(*) FROM soccer WHERE team_id = old.team_id )
+Where detailteam.id = old.team_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_soccer` AFTER INSERT ON `soccer` FOR EACH ROW UPDATE detailteam 
+SET quantity_soccer = (SELECT COUNT(*) FROM soccer WHERE team_id = New.team_id )
+Where detailteam.id = NEW.team_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_quantity_soccer_after_delete` AFTER DELETE ON `soccer` FOR EACH ROW BEGIN
+    -- Update quantity_soccer for the old team_id
+    UPDATE detailteam 
+    SET quantity_soccer = (
+        SELECT COUNT(*) FROM soccer WHERE team_id = OLD.team_id
+    )
+    WHERE detailteam.id = OLD.team_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_quantity_soccer_after_insert` AFTER INSERT ON `soccer` FOR EACH ROW BEGIN
+    -- Update quantity_soccer for the new team_id
+    UPDATE detailteam 
+    SET quantity_soccer = (
+        SELECT COUNT(*) FROM soccer WHERE team_id = NEW.team_id
+    )
+    WHERE detailteam.id = NEW.team_id;
+END
+$$
+DELIMITER ;
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -197,6 +293,12 @@ ALTER TABLE `season`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `soccer`
+--
+ALTER TABLE `soccer`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -210,19 +312,25 @@ ALTER TABLE `detailteam`
 -- AUTO_INCREMENT cho bảng `result`
 --
 ALTER TABLE `result`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `schedule`
 --
 ALTER TABLE `schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `season`
 --
 ALTER TABLE `season`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT cho bảng `soccer`
+--
+ALTER TABLE `soccer`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
