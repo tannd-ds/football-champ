@@ -37,3 +37,13 @@ Route::get('/team/edit/{id}', 'App\Http\Controllers\TeamController@edit_team');
 Route::post('/team/update/{id}', 'App\Http\Controllers\TeamController@update');
 
 Route::get('/team/delete/{id}', 'App\Http\Controllers\TeamController@delete');
+//Soccer route
+Route::get('/soccer', 'App\Http\Controllers\SoccerController@index');
+
+Route::post('/soccer/add', 'App\Http\Controllers\SoccerController@add');
+
+Route::get('/soccer/edit/{id}', 'App\Http\Controllers\SoccerController@edit_soccer');
+
+Route::post('/soccer/update/{id}', 'App\Http\Controllers\SoccerController@update');
+
+Route::get('/soccer/delete/{id}', 'App\Http\Controllers\SoccerController@delete');
