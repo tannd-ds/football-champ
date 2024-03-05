@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 05, 2024 lúc 07:27 AM
+-- Thời gian đã tạo: Th3 05, 2024 lúc 09:10 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -75,7 +75,7 @@ CREATE TABLE `result` (
 CREATE TABLE `schedule` (
   `id` int(11) NOT NULL,
   `season_id` int(11) DEFAULT NULL,
-  `day` date DEFAULT NULL,
+  `date` date DEFAULT NULL,
   `team_id_1` int(11) DEFAULT NULL,
   `team_id_2` int(11) DEFAULT NULL,
   `team1_score` int(11) DEFAULT NULL,
@@ -135,10 +135,22 @@ DELIMITER ;
 CREATE TABLE `season` (
   `id` int(11) NOT NULL,
   `name_season` varchar(255) DEFAULT NULL,
-  `start_day` date DEFAULT NULL,
-  `end_day` date DEFAULT NULL,
-  `quatity_team` int(11) DEFAULT NULL
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `quantity_team` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `season`
+--
+
+INSERT INTO `season` (`id`, `name_season`, `start_date`, `end_date`, `quantity_team`) VALUES
+(2, NULL, '2032-02-20', '1970-01-01', NULL),
+(3, NULL, '1970-01-01', '1970-01-01', NULL),
+(4, NULL, '1970-01-01', '1970-01-01', NULL),
+(5, NULL, '2032-02-20', '1970-01-01', NULL),
+(6, '2024', '2032-02-20', '1970-01-01', 11),
+(7, 'tann', '2032-02-20', '1970-01-01', 11);
 
 --
 -- Bẫy `season`
@@ -210,7 +222,7 @@ ALTER TABLE `schedule`
 -- AUTO_INCREMENT cho bảng `season`
 --
 ALTER TABLE `season`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
