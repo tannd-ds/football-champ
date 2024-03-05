@@ -29,4 +29,11 @@ Route::post('/season/update/{id}', 'App\Http\Controllers\SeasonController@update
 Route::get('/season/delete/{id}', 'App\Http\Controllers\SeasonController@delete');
 // Team route
 Route::get('/team', 'App\Http\Controllers\TeamController@index');
+
 Route::post('/team/add', 'App\Http\Controllers\TeamController@add');
+
+Route::get('/team/edit/{id}', 'App\Http\Controllers\TeamController@edit_team');
+
+Route::post('/team/update/{id}', 'App\Http\Controllers\TeamController@update');
+
+Route::get('/team/delete/{id}', 'App\Http\Controllers\TeamController@delete');
