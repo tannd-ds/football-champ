@@ -47,3 +47,16 @@ Route::get('/soccer/edit/{id}', 'App\Http\Controllers\SoccerController@edit_socc
 Route::post('/soccer/update/{id}', 'App\Http\Controllers\SoccerController@update');
 
 Route::get('/soccer/delete/{id}', 'App\Http\Controllers\SoccerController@delete');
+
+//Match route
+Route::get('/match/{id}', 'App\Http\Controllers\MatchController@index');
+//Get list team filter by season
+Route::get('/match/listteam/{id}', 'App\Http\Controllers\MatchController@list_team_season');
+
+Route::post('/match/add', 'App\Http\Controllers\MatchController@add');
+
+Route::get('/match/edit/{id}', 'App\Http\Controllers\MatchController@edit_soccer');
+
+Route::post('/match/update/{id}', 'App\Http\Controllers\MatchController@update');
+
+Route::get('/match/delete/{id}', 'App\Http\Controllers\MatchController@delete');

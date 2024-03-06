@@ -24,7 +24,7 @@ class SoccerController extends Controller
             // turn the dates into the format that the database expects
             
 
-            $data = array('name_season' => $name_soccer, 'birthday' => $birthday, 'category' => $category, 'team_id'=> $team_id);
+            $data = array('name_soccer' => $name_soccer, 'birthday' => $birthday, 'category' => $category, 'team_id'=> $team_id);
             DB::table('soccer')->insert($data);
             return response()->json('Soccer added successfully', 200);
         
@@ -48,7 +48,7 @@ class SoccerController extends Controller
             // turn the dates into the format that the database expects
             
 
-            $data = array('name_season' => $name_soccer, 'birthday' => $birthday, 'category' => $category, 'team_id'=> $team_id);
+            $data = array('name_soccer' => $name_soccer, 'birthday' => $birthday, 'category' => $category, 'team_id'=> $team_id);
             DB::table('soccer')->where('id',$id)->update($data);
             return response()->json('Soccer update successfully', 200);
         
