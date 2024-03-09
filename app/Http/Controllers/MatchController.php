@@ -4,16 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 class MatchController extends Controller
 {
     public function index($id){
         $schedule=DB::table('schedule')->where('season_id',$id)->get();
-        return response()->json($schedule);
+        $team_1=DB::table('detailteam')->join('schedule','detailteam.id','=','schedule.team_id_1')->select('detailteam.name_team')->where('schedule.season_id',$id)->get();
+        $team_2=DB::table('detailteam')->join('schedule','detailteam.id','=','schedule.team_id_2')->select('detailteam.name_team')->where('schedule.season_id',$id)->get();
+        $responseData = [
+            'schedule' => $schedule,
+            'team_1' => $team_1,
+            'team_2' => $team_2,
+        ];
+        return response()->json($responseData);
     }
     public function list_team_season($id){
         $list=DB::table('listteam')->join('detailteam','detailteam.id','=','listteam.team_id')->join('result','result.team_id','=','listteam.team_id')->where('listteam.season_id',$id)->get();
         return response()->json($list);
     }
+    
     public function add(Request $request){  try{
         $season_id=$request->input('season_id');
         $date=$request->input('date');
