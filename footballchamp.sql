@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 05, 2024 lúc 10:03 AM
+-- Thời gian đã tạo: Th3 09, 2024 lúc 05:41 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -20,6 +20,80 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `footballchamp`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `detailschedule`
+--
+
+CREATE TABLE `detailschedule` (
+  `schedule_id` int(11) NOT NULL,
+  `soccer_id` int(11) NOT NULL,
+  `team_id` int(11) NOT NULL,
+  `category_goal` int(11) NOT NULL,
+  `time_goal` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Bẫy `detailschedule`
+--
+DELIMITER $$
+CREATE TRIGGER `delete_detailschedule` AFTER DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+    	team1_score = team1_score - 1
+    WHERE 
+        team_id_1 = OLD.team_id
+        AND id = OLD.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `delete_detailschedule2` AFTER DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+    	team2_score = team2_score - 1
+    WHERE 
+        team_id_2 = OLD.team_id
+        AND id = OLD.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_detailschedule` AFTER INSERT ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+        team1_score = team1_score + 1
+    WHERE 
+        team_id_1 = NEW.team_id
+        AND id = NEW.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_detailschedule2` AFTER INSERT ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+        team2_score = team2_score + 1
+    WHERE 
+        team_id_2 = NEW.team_id
+        AND id = NEW.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_detailschedule` AFTER UPDATE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+    	team1_score = team1_score - 1,
+        team2_score = team2_score + 1
+    WHERE 
+        team_id_2 = NEW.team_id
+        AND id = NEW.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_detailschedule2` AFTER UPDATE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+    SET 
+    	team1_score = team1_score + 1,
+        team2_score = team2_score - 1
+    WHERE 
+        team_id_1 = NEW.team_id
+        AND id = NEW.schedule_id
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -45,8 +119,26 @@ CREATE TABLE `detailteam` (
 CREATE TABLE `listteam` (
   `season_id` int(11) DEFAULT NULL,
   `team_id` int(11) DEFAULT NULL,
-  `day_sigin` date DEFAULT NULL
+  `day_signin` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Bẫy `listteam`
+--
+DELIMITER $$
+CREATE TRIGGER `delete_listteam` BEFORE DELETE ON `listteam` FOR EACH ROW DELETE FROM result where team_id=old.team_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_listteam` AFTER INSERT ON `listteam` FOR EACH ROW INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) VALUES (NULL, NEW.season_id, new.team_id, NULL, NULL, NULL, NULL)
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_listteam_result` AFTER UPDATE ON `listteam` FOR EACH ROW UPDATE result
+SET team_id=NEW.team_id
+WHERE team_id=OLD.team_id
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -63,14 +155,6 @@ CREATE TABLE `result` (
   `draw` int(11) DEFAULT NULL,
   `total` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `result`
---
-
-INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) VALUES
-(6, 1, 1, 0, 0, 0, 0),
-(7, 1, 2, 0, 0, 1, 1);
 
 --
 -- Bẫy `result`
@@ -95,6 +179,13 @@ CREATE TABLE `schedule` (
   `team1_score` int(11) DEFAULT NULL,
   `team2_score` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `schedule`
+--
+
+INSERT INTO `schedule` (`id`, `season_id`, `date`, `team_id_1`, `team_id_2`, `team1_score`, `team2_score`) VALUES
+(5, 1, '2024-03-06', 1, 2, 0, 0);
 
 --
 -- Bẫy `schedule`
@@ -130,7 +221,7 @@ WHERE team_id = old.team_id_2
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `insert_schedule` BEFORE INSERT ON `schedule` FOR EACH ROW SET NEW.team1_score = null, NEW.team2_score = null
+CREATE TRIGGER `insert_schedule` BEFORE INSERT ON `schedule` FOR EACH ROW SET NEW.team1_score = 0, NEW.team2_score = 0
 $$
 DELIMITER ;
 DELIMITER $$
@@ -185,18 +276,6 @@ CREATE TABLE `season` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `season`
---
-
-INSERT INTO `season` (`id`, `name_season`, `start_date`, `end_date`, `quantity_team`) VALUES
-(2, NULL, '2032-02-20', '1970-01-01', NULL),
-(3, NULL, '1970-01-01', '1970-01-01', NULL),
-(4, NULL, '1970-01-01', '1970-01-01', NULL),
-(5, NULL, '2032-02-20', '1970-01-01', NULL),
-(6, '2024', '2032-02-20', '1970-01-01', 11),
-(7, 'tann', '2032-02-20', '1970-01-01', 11);
-
---
 -- Bẫy `season`
 --
 DELIMITER $$
@@ -223,7 +302,8 @@ CREATE TABLE `soccer` (
   `name_soccer` varchar(255) NOT NULL,
   `birthday` date NOT NULL,
   `category` int(11) NOT NULL,
-  `team_id` int(11) NOT NULL
+  `team_id` int(11) NOT NULL,
+  `total_goal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -312,13 +392,13 @@ ALTER TABLE `detailteam`
 -- AUTO_INCREMENT cho bảng `result`
 --
 ALTER TABLE `result`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `schedule`
 --
 ALTER TABLE `schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `season`

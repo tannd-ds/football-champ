@@ -11,7 +11,7 @@ class MatchController extends Controller
         return response()->json($schedule);
     }
     public function list_team_season($id){
-        $list=DB::table('listteam')->join('detailteam','detailteam.id','=','listteam.team_id')->where('listteam.season_id',$id)->get();
+        $list=DB::table('listteam')->join('detailteam','detailteam.id','=','listteam.team_id')->join('result','result.team_id','=','listteam.id')->where('listteam.season_id',$id)->get();
         return response()->json($list);
     }
     public function add(Request $request){  try{
