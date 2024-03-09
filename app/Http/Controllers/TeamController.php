@@ -11,6 +11,10 @@ class TeamController extends Controller
         $teams = DB::table('detailteam')->get();
         return response()->json($teams);
     }
+    // show soccer team
+    public function show_team($id){
+
+    }
     //add team
     public function add(Request $request)
     {
@@ -56,6 +60,7 @@ class TeamController extends Controller
         }
     }
     public function delete($id){
+        DB::table('soccer')->where('team_id',$id)->delete();
         DB::table('detailteam')->where('id',$id)->delete();
         return response()->json('Team delete successfully', 200);    }
 }
