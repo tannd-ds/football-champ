@@ -60,7 +60,12 @@ class TeamController extends Controller
         }
     }
     public function delete($id){
+        $Schedule= DB::table('schedule')->join('detailschedule','detailschedule.schedule_id','=','schedule.id')->select('schedule.id')->where('schedule.team_id_1',$id)->orWhere('schedule.team_id_2',$id)->get();
+        foreach($Schedule as $item){
+            DB::table('detailschedule')->where('schedule_id', $item->id)->delete();
+        }
         DB::table('soccer')->where('team_id',$id)->delete();
         DB::table('detailteam')->where('id',$id)->delete();
-        return response()->json('Team delete successfully', 200);    }
+        return response()->json('Team delete successfully', 200); }
+           
 }
