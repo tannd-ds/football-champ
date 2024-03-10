@@ -30,6 +30,8 @@ Route::get('/season/delete/{id}', 'App\Http\Controllers\SeasonController@delete'
 // Team route
 Route::get('/team', 'App\Http\Controllers\TeamController@index');
 
+Route::get('/team/{id}', 'App\Http\Controllers\TeamController@show_team');
+
 Route::post('/team/add', 'App\Http\Controllers\TeamController@add');
 
 Route::get('/team/edit/{id}', 'App\Http\Controllers\TeamController@edit_team');

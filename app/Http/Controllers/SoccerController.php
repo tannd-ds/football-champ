@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class SoccerController extends Controller
 {   
-    // Hiển thị
+    // Show soccer
     public function index(){
         $player=DB::table('soccer')->get();
         return response()->json($player);
@@ -59,7 +59,12 @@ class SoccerController extends Controller
     }
     //delete
     public function delete($id){
+        try{
         DB::table('soccer')->where('id',$id)->delete();
-        return response()->json('Soccer delete successfully', 200);    }
+        return response()->json('Soccer delete successfully', 200);  }
+     catch (\Exception $e) {
+        return response()->json(['error' => 'Failed to delete soccer: ' . $e->getMessage()], 500);
+    }  
+}
 
 }

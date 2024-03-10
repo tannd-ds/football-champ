@@ -5,13 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class SeasonController extends Controller
 {  
-    // Trang xem
+    // Trang xem toàn bộ mùa giải
     public function index()
     {
         $all_season = DB::table('season')->get();
         return response()->json($all_season);
     }
-    // Add be
+    // Add new season
     public function add(Request $request)
     {
         try {
@@ -37,7 +37,7 @@ class SeasonController extends Controller
         $edit_season = DB::table('season')->where('id', $id)->get();
         return response()->json($edit_season);
     }
-    // Update be
+    // Update funtion
     public function update(Request $request, $id){
         try {
         $season_name = $request->input('name_season');
@@ -61,9 +61,13 @@ class SeasonController extends Controller
     }
 
     }
-    // Delete be
+    // Delete season
     public function delete($id){
         try{
+            $Schedule= DB::table('schedule')->join('detailschedule','detailschedule.schedule_id','=','schedule.id')->select('schedule.id')->where('schedule.season_id',$id)->get();
+            foreach($Schedule as $item){
+                DB::table('detailschedule')->where('schedule_id', $item->id)->delete();
+            }
         DB::table('season')->where('id', $id)->delete();
     return response()->json('Season delete successfully');
 }

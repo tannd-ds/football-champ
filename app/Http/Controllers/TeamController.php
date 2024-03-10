@@ -13,6 +13,8 @@ class TeamController extends Controller
     }
     // show soccer team
     public function show_team($id){
+        $team_soccer = DB::table('soccer')->where('team_id',$id)->get();
+        return response()->json($team_soccer);
 
     }
     //add team
@@ -20,7 +22,6 @@ class TeamController extends Controller
     {
         try {
             $name_team= $request->input('name_team');
-            $quantity_soccer = $request -> input('quantity_soccer');
             $established_date = $request -> input('established_date');
             $home_court = $request-> input('home_court');
             $url_image= $request->file('url_image');
@@ -29,7 +30,7 @@ class TeamController extends Controller
             // $new_image =  $name_image.rand(0,99).'.'.$url_image->getClientOriginalExtension();
             // $url_image->move('public/uploads/team',$new_image);
 
-            $data = array('name_team' => $name_team, 'quantity_soccer' => $quantity_soccer, 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
+            $data = array('name_team' => $name_team, 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
             DB::table('detailteam')->insert($data);
             return response()->json('Team added successfully', 200);
         
@@ -43,15 +44,14 @@ class TeamController extends Controller
         $edit_team = DB::table('detailteam')->where('id', $id)->get();
         return response()->json($edit_team);
     }
-    //update team
+    //update team funtion
     public function update(Request $request, $id){
         try {
             $name_team= $request->input('name_team');
-            $quantity_soccer = $request -> input('quantity_soccer');
             $established_date = $request -> input('established_date');
             $home_court = $request-> input('home_court');
             $url_image= $request->file('url_image');
-            $data = array('name_team' => $name_team, 'quantity_soccer' => $quantity_soccer, 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
+            $data = array('name_team' => $name_team , 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
             DB::table('detailteam')->where('id',$id)->update($data);
             return response()->json('Team update successfully', 200);
         
@@ -59,13 +59,18 @@ class TeamController extends Controller
             return response()->json(['error' => 'Failed to update Team: ' . $e->getMessage()], 500);
         }
     }
+    //delete team
     public function delete($id){
+        try{
         $Schedule= DB::table('schedule')->join('detailschedule','detailschedule.schedule_id','=','schedule.id')->select('schedule.id')->where('schedule.team_id_1',$id)->orWhere('schedule.team_id_2',$id)->get();
         foreach($Schedule as $item){
             DB::table('detailschedule')->where('schedule_id', $item->id)->delete();
         }
         DB::table('soccer')->where('team_id',$id)->delete();
         DB::table('detailteam')->where('id',$id)->delete();
-        return response()->json('Team delete successfully', 200); }
+        return response()->json('Team delete successfully', 200); }   
+        catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete team: ' . $e->getMessage()], 500);
+        }}
            
 }
