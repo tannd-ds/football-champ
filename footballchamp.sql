@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 09, 2024 lúc 08:29 AM
+-- Thời gian đã tạo: Th3 09, 2024 lúc 09:59 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -203,7 +203,7 @@ SET win = (SELECT COUNT(*)
             FROM schedule
             WHERE (team1_score = team2_score AND team_id_1 = old.team_id_1)),
                   total=win*3+draw
-WHERE team_id = old.team_id_1
+WHERE team_id = old.team_id_1 and season_id = OLD.season_id
 $$
 DELIMITER ;
 DELIMITER $$
@@ -218,7 +218,7 @@ SET win = (SELECT COUNT(*)
             FROM schedule
             WHERE (team1_score = team2_score AND team_id_1 = old.team_id_2)),
                   total=win*3+draw
-WHERE team_id = old.team_id_2
+WHERE team_id = old.team_id_2 and season_id = OLD.season_id
 $$
 DELIMITER ;
 DELIMITER $$
@@ -229,36 +229,36 @@ DELIMITER $$
 CREATE TRIGGER `update_schedule_result` AFTER UPDATE ON `schedule` FOR EACH ROW UPDATE result
 SET win = (SELECT COUNT(*)
            FROM schedule
-           WHERE (team1_score > team2_score AND team_id_1 = NEW.team_id_1) OR 
-                 (team2_score > team1_score AND team_id_2 = NEW.team_id_1)),
+           WHERE season_id = NEW.season_id and ((team1_score > team2_score AND team_id_1 = NEW.team_id_1) OR 
+                 (team2_score > team1_score AND team_id_2 = NEW.team_id_1))),
     lose = (SELECT COUNT(*)
             FROM schedule
-            WHERE (team1_score < team2_score AND team_id_1 = NEW.team_id_1) OR 
-                  (team2_score < team1_score AND team_id_2 = NEW.team_id_1)),
+            WHERE season_id = NEW.season_id AND ((team1_score < team2_score AND team_id_1 = NEW.team_id_1) OR 
+                  (team2_score < team1_score AND team_id_2 = NEW.team_id_1))),
     draw = (SELECT COUNT(*)
             FROM schedule
-            WHERE (team1_score = team2_score AND team_id_1 = NEW.team_id_1) OR 
-                  (team2_score = team1_score AND team_id_2 = NEW.team_id_1)),
+            WHERE season_id = NEW.season_id and ((team1_score = team2_score AND team_id_1 = NEW.team_id_1) OR 
+                  (team2_score = team1_score AND team_id_2 = NEW.team_id_1))),
                   total=win*3+draw
-WHERE team_id = NEW.team_id_1
+WHERE team_id = NEW.team_id_1 and season_id = NEW.season_id
 $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `update_schedule_result_2` AFTER UPDATE ON `schedule` FOR EACH ROW UPDATE result
 SET win = (SELECT COUNT(*)
            FROM schedule
-           WHERE (team1_score > team2_score AND team_id_1 = NEW.team_id_2) OR 
-                 (team2_score > team1_score AND team_id_2 = NEW.team_id_2)),
+           WHERE season_id = NEW.season_id AND ((team1_score > team2_score AND team_id_1 = NEW.team_id_2) OR 
+                 (team2_score > team1_score AND team_id_2 = NEW.team_id_2))),
     lose = (SELECT COUNT(*)
             FROM schedule
-            WHERE (team1_score < team2_score AND team_id_1 = NEW.team_id_2) OR 
-                  (team2_score < team1_score AND team_id_2 = NEW.team_id_2)),
+            WHERE season_id = NEW.season_id AND ((team1_score < team2_score AND team_id_1 = NEW.team_id_2) OR 
+                  (team2_score < team1_score AND team_id_2 = NEW.team_id_2))),
     draw = (SELECT COUNT(*)
             FROM schedule
-            WHERE (team1_score = team2_score AND team_id_1 = NEW.team_id_2) OR 
-                  (team2_score = team1_score AND team_id_2 = NEW.team_id_2)),
+            WHERE season_id = NEW.season_id AND ((team1_score = team2_score AND team_id_1 = NEW.team_id_2) OR 
+                  (team2_score = team1_score AND team_id_2 = NEW.team_id_2))),
      total = win*3+draw
-WHERE team_id = NEW.team_id_2
+WHERE team_id = NEW.team_id_2 and season_id = NEW.season_id
 $$
 DELIMITER ;
 
