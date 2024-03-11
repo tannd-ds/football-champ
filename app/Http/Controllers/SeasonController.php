@@ -83,9 +83,11 @@ catch(\Exception $e){
             $team_id = $request->input('team_id');
             $season_id = $request->input('season_id');
             $date_signin = $request->input('date_signin');
+            $status = $request->input('status');
+
             $quantity_team = DB::table('detailteam')->select('quantity_soccer')->where('id', $team_id)->first();
             if ($quantity_team && isset($quantity_team->quantity_soccer) && $quantity_team->quantity_soccer >= 15 && $quantity_team->quantity_soccer <= 20) {
-                $data = array('season_id' => $season_id, 'team_id' => $team_id, 'date_signin' => $date_signin);
+                $data = array('season_id' => $season_id, 'team_id' => $team_id, 'date_signin' => $date_signin,'status' => $status);
                 DB::table('listteam')->insert($data);
                 return response()->json('Thành công', 200);
             } else {
