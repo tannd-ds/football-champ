@@ -33,9 +33,17 @@ class MatchController extends Controller
         $team_id_2=$request->input('team_id_2');
         $data = array('season_id' => $season_id, 'date' => $date, 'team_id_1' => $team_id_1, 'team_id_2'=> $team_id_2);
         DB::table('schedule')->insert($data);
-        return response()->json('Match added successfully', 200);} 
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
         catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to add match: ' . $e->getMessage()], 500);
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
         }
     }
 
@@ -51,16 +59,33 @@ class MatchController extends Controller
             $team_id_2=$request->input('team_id_2');
             $data = array('season_id' => $season_id, 'date' => $date, 'team_id_1' => $team_id_1, 'team_id_2'=> $team_id_2);
             DB::table('schedule')->where('id',$id)->update($data);
-            return response()->json('Match update successfully', 200);} 
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
             catch (\Exception $e) {
-                return response()->json(['error' => 'Failed to update match: ' . $e->getMessage()], 500);
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
             }
     }
     public function delete($id){
         try{
         DB::table('schedule')->where('id',$id)->delete();
-        return response()->json('Match delete successfully', 200);      } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete match: ' . $e->getMessage()], 500);
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
         }
     }
 

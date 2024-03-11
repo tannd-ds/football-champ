@@ -36,11 +36,18 @@ class TeamController extends Controller
 
             $data = array('name_team' => $name_team, 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
             DB::table('detailteam')->insert($data);
-            return response()->json('Team added successfully', 200);
-        
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to add Team: ' . $e->getMessage()], 500);
-        }
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
+            catch (\Exception $e) {
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
+            }
     }
     //edit team
     public function edit_team($id)
@@ -57,11 +64,18 @@ class TeamController extends Controller
             $url_image= $request->file('url_image');
             $data = array('name_team' => $name_team , 'established_date' => $established_date, 'home_court'=> $home_court ,'url_image' => $url_image);
             DB::table('detailteam')->where('id',$id)->update($data);
-            return response()->json('Team update successfully', 200);
-        
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to update Team: ' . $e->getMessage()], 500);
-        }
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
+            catch (\Exception $e) {
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
+            }
     }
     //delete team
     public function delete($id){
@@ -72,9 +86,18 @@ class TeamController extends Controller
         }
         DB::table('soccer')->where('team_id',$id)->delete();
         DB::table('detailteam')->where('id',$id)->delete();
-        return response()->json('Team delete successfully', 200); }   
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
         catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete team: ' . $e->getMessage()], 500);
-        }}
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+        }
+    }
            
 }

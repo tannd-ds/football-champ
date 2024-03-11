@@ -28,11 +28,18 @@ class SeasonController extends Controller
 
             $data = array('name_season' => $season_name, 'start_date' => $start_date, 'end_date' => $end_date, 'quantity_team'=> $quantity);
             DB::table('season')->insert($data);
-            return response()->json('Season added successfully', 200);
-        
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to add season: ' . $e->getMessage()], 500);
-        }
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
+            catch (\Exception $e) {
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
+            }
     }
     // Trang chỉnh sửa
     public function edit_season($id)
@@ -58,10 +65,18 @@ class SeasonController extends Controller
             'quantity_team'=> $quantity
         );
         DB::table('season')->where('id', $id)->update($data);
-        return response()->json('Season update successfully');
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Failed to update season: ' . $e->getMessage()], 500);
-    }
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+        }
 
     }
     // Delete season
@@ -72,10 +87,18 @@ class SeasonController extends Controller
                 DB::table('detailschedule')->where('schedule_id', $item->id)->delete();
             }
         DB::table('season')->where('id', $id)->delete();
-    return response()->json('Season delete successfully');
-}
-catch(\Exception $e){
-    return response()->json(['error' => 'Failed to delete season: ' . $e->getMessage()], 500);    }
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+        }
     }
     // Register season
     public function register_into_season(Request $request){
@@ -89,7 +112,11 @@ catch(\Exception $e){
             if ($quantity_team && isset($quantity_team->quantity_soccer) && $quantity_team->quantity_soccer >= 15 && $quantity_team->quantity_soccer <= 20) {
                 $data = array('season_id' => $season_id, 'team_id' => $team_id, 'date_signin' => $date_signin,'status' => $status);
                 DB::table('listteam')->insert($data);
-                return response()->json(200);
+                $reponse=[
+                    'content'=> 'succes',
+                    'code' => 200,
+                ];
+                return response()->json($reponse);
             } else {
                 $reponse=[
                     'content'=> 'Số lượng cầu thủ phải trong khoảng 15 tới 20',
@@ -98,7 +125,11 @@ catch(\Exception $e){
                 return response()->json($reponse);
             }
         } catch (\Exception $e) {
-            return response()->json('Lỗi không xác định xảy ra', 500);
+            $e=[
+                'content'=> 'Fail',
+                'code' => 500,
+            ];
+            return response()->json($e);
         }
 
     }

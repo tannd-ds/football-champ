@@ -17,9 +17,17 @@ class RegistrationFormController extends Controller
         try{
         $Data= array('status'=>1);
         DB::table('listteam')->where('id',$id)->update($Data);
-        return response()->json('Success',200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed' . $e->getMessage()], 500);
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
         }
 
     }
@@ -28,9 +36,17 @@ class RegistrationFormController extends Controller
         try{
         $Data= array('status'=>2);
         DB::table('listteam')->where('id',$id)->update($Data);
-        return response()->json('Success',200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed' . $e->getMessage()], 500);
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
         }
 
     }
