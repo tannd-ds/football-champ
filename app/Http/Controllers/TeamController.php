@@ -14,8 +14,12 @@ class TeamController extends Controller
     // show soccer team
     public function show_team($id){
         $team_soccer = DB::table('soccer')->where('team_id',$id)->get();
-        return response()->json($team_soccer);
-
+        $team = DB::table('detailteam')->where('id',$id)->get();
+        $data= [
+        'team_soccer'   =>  $team_soccer,
+        'team'  =>  $team,
+        ];
+        return response()->json($data);
     }
     //add team
     public function add(Request $request)

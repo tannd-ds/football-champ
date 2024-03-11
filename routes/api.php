@@ -64,3 +64,11 @@ Route::get('/match/edit/{id}', 'App\Http\Controllers\MatchController@edit_soccer
 Route::post('/match/update/{id}', 'App\Http\Controllers\MatchController@update');
 
 Route::get('/match/delete/{id}', 'App\Http\Controllers\MatchController@delete');
+
+//Registration Route
+Route::get('/register', 'App\Http\Controllers\RegistrationFormController@index');
+
+Route::get('/register/accept/{id}', 'App\Http\Controllers\RegistrationFormController@accept');
+
+Route::get('/register/refuse/{id}', 'App\Http\Controllers\RegistrationFormController@refuse');
+
