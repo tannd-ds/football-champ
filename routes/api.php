@@ -53,7 +53,7 @@ Route::post('/soccer/update/{id}', 'App\Http\Controllers\SoccerController@update
 Route::get('/soccer/ban/{id}', 'App\Http\Controllers\SoccerController@ban');
 
 Route::get('/soccer/unban/{id}', 'App\Http\Controllers\SoccerController@unban');
-
+ 
 
 //Match route
 Route::get('/match/{id}', 'App\Http\Controllers\MatchController@index');
