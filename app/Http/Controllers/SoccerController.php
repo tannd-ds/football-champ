@@ -34,7 +34,7 @@ class SoccerController extends Controller
     }
     //edit
     public function edit_soccer($id){
-        $soccer =DB::table('soccer')->join('detailteam','soccer.team_id','=','detailteam.id')->where('soccer.id',$id)->get();
+        $soccer = DB::table('soccer')->join('detailteam','soccer.team_id','=','detailteam.id')->where('soccer.id',$id)->get();
         return response()->json($soccer);
     }
     //update
@@ -58,13 +58,38 @@ class SoccerController extends Controller
 
     }
     //delete
-    public function delete($id){
-        try{
-        DB::table('soccer')->where('id',$id)->delete();
-        return response()->json('Soccer delete successfully', 200);  }
-     catch (\Exception $e) {
-        return response()->json(['error' => 'Failed to delete soccer: ' . $e->getMessage()], 500);
-    }  
+    public function ban($id){
+        try{ 
+            $data = array('status'=> 0);
+            DB::table('soccer')->where('id',$id)->update($data);
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
+            catch (\Exception $e) {
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
+    }
 }
-
+public function unban($id){
+    try{ 
+        $data = array('status'=> 1);
+        DB::table('soccer')->where('id',$id)->update($data);
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+}
+}
 }

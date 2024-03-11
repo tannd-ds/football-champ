@@ -50,7 +50,10 @@ Route::get('/soccer/edit/{id}', 'App\Http\Controllers\SoccerController@edit_socc
 
 Route::post('/soccer/update/{id}', 'App\Http\Controllers\SoccerController@update');
 
-Route::get('/soccer/delete/{id}', 'App\Http\Controllers\SoccerController@delete');
+Route::get('/soccer/ban/{id}', 'App\Http\Controllers\SoccerController@ban');
+
+Route::get('/soccer/unban/{id}', 'App\Http\Controllers\SoccerController@unban');
+
 
 //Match route
 Route::get('/match/{id}', 'App\Http\Controllers\MatchController@index');

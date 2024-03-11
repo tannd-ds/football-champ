@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 09, 2024 lúc 09:59 AM
+-- Thời gian đã tạo: Th3 11, 2024 lúc 10:38 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `detailschedule` (
 -- Bẫy `detailschedule`
 --
 DELIMITER $$
-CREATE TRIGGER `delete_detailschedule_schedule` AFTER DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+CREATE TRIGGER `delete_detailschedule_schedule` BEFORE DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
     SET 
     	team1_score = team1_score - 1
     WHERE 
@@ -49,12 +49,18 @@ CREATE TRIGGER `delete_detailschedule_schedule` AFTER DELETE ON `detailschedule`
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `delete_detailschedule_schedule_2` AFTER DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
+CREATE TRIGGER `delete_detailschedule_schedule_2` BEFORE DELETE ON `detailschedule` FOR EACH ROW UPDATE schedule 
     SET 
     	team2_score = team2_score - 1
     WHERE 
         team_id_2 = OLD.team_id
         AND id = OLD.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `delete_detailschedule_soccer` AFTER DELETE ON `detailschedule` FOR EACH ROW UPDATE soccer
+SET total_goal	= (SELECT COUNT(*)FROM detailschedule WHERE soccer_id=OLD.soccer_id)
+WHERE id = OLD.soccer_id
 $$
 DELIMITER ;
 DELIMITER $$
@@ -73,6 +79,12 @@ CREATE TRIGGER `insert_detailschedule_schedule_2` AFTER INSERT ON `detailschedul
     WHERE 
         team_id_2 = NEW.team_id
         AND id = NEW.schedule_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_detailschedule_soccer` AFTER INSERT ON `detailschedule` FOR EACH ROW UPDATE soccer
+SET total_goal	= (SELECT COUNT(*)FROM detailschedule WHERE soccer_id=NEW.soccer_id)
+WHERE id = NEW.soccer_id
 $$
 DELIMITER ;
 DELIMITER $$
@@ -95,6 +107,18 @@ CREATE TRIGGER `update_detailschedule_schedule_2` AFTER UPDATE ON `detailschedul
         AND id = NEW.schedule_id
 $$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_detailschedule_soccer` AFTER UPDATE ON `detailschedule` FOR EACH ROW UPDATE soccer
+SET total_goal	= (SELECT COUNT(*)FROM detailschedule WHERE soccer_id=NEW.soccer_id)
+WHERE id = NEW.soccer_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_detailschedule_soccer_2` AFTER UPDATE ON `detailschedule` FOR EACH ROW UPDATE soccer
+SET total_goal	= (SELECT COUNT(*)FROM detailschedule WHERE soccer_id=OLD.soccer_id)
+WHERE id = OLD.soccer_id
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -115,6 +139,11 @@ CREATE TABLE `detailteam` (
 -- Bẫy `detailteam`
 --
 DELIMITER $$
+CREATE TRIGGER `delete_detailteam_detailschedule` BEFORE DELETE ON `detailteam` FOR EACH ROW DELETE FROM detailschedule WHERE
+team_id= old.id
+$$
+DELIMITER ;
+DELIMITER $$
 CREATE TRIGGER `delete_detailteam_listteam` AFTER DELETE ON `detailteam` FOR EACH ROW DELETE FROM listteam
 WHERE listteam.team_id = OLD.id
 $$
@@ -131,7 +160,7 @@ CREATE TABLE `listteam` (
   `season_id` int(11) DEFAULT NULL,
   `team_id` int(11) DEFAULT NULL,
   `date_signin` date DEFAULT NULL,
-  `status` int(11) DEFAULT NULL
+  `status` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -147,7 +176,10 @@ where (team_id_1 = old.team_id OR team_id_2= old.team_id) AND season_id=old.seas
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `insert_listteam_result` AFTER INSERT ON `listteam` FOR EACH ROW INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) VALUES (NULL, NEW.season_id, new.team_id, 0, 0, 0, 0)
+CREATE TRIGGER `update_listteam_result` AFTER UPDATE ON `listteam` FOR EACH ROW IF NEW.status = 1 THEN
+        INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) 
+        VALUES (NULL, NEW.season_id, NEW.team_id, 0, 0, 0, 0);
+    END IF
 $$
 DELIMITER ;
 
@@ -187,8 +219,7 @@ CREATE TABLE `schedule` (
 -- Bẫy `schedule`
 --
 DELIMITER $$
-CREATE TRIGGER `delete_schedule_detailschedule` AFTER DELETE ON `schedule` FOR EACH ROW DELETE FROM detailschedule
-    WHERE schedule_id = OLD.id
+CREATE TRIGGER `delete_schedule_detailschedule` BEFORE DELETE ON `schedule` FOR EACH ROW DELETE FROM detailschedule where schedule_id = old.id
 $$
 DELIMITER ;
 DELIMITER $$
@@ -303,8 +334,10 @@ CREATE TABLE `soccer` (
   `name_soccer` varchar(255) NOT NULL,
   `birthday` date NOT NULL,
   `category` int(11) NOT NULL,
-  `team_id` int(11) NOT NULL,
-  `total_goal` int(11) DEFAULT 0
+  `team_id` int(11) DEFAULT NULL,
+  `total_goal` int(11) DEFAULT 0,
+  `note` varchar(255) DEFAULT NULL,
+  `status` int(255) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -315,7 +348,7 @@ CREATE TRIGGER `update_quantity_soccer_after_delete` AFTER DELETE ON `soccer` FO
     -- Update quantity_soccer for the old team_id
     UPDATE detailteam 
     SET quantity_soccer = (
-        SELECT COUNT(*) FROM soccer WHERE team_id = OLD.team_id
+        SELECT COUNT(*) FROM soccer WHERE team_id = OLD.team_id and status = 1
     )
     WHERE detailteam.id = OLD.team_id;
 END
@@ -326,7 +359,26 @@ CREATE TRIGGER `update_quantity_soccer_after_insert` AFTER INSERT ON `soccer` FO
     -- Update quantity_soccer for the new team_id
     UPDATE detailteam 
     SET quantity_soccer = (
-        SELECT COUNT(*) FROM soccer WHERE team_id = NEW.team_id
+        SELECT COUNT(*) FROM soccer WHERE team_id = NEW.team_id and status = 1
+    )
+    WHERE detailteam.id = NEW.team_id;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_soccer_detailteam` AFTER UPDATE ON `soccer` FOR EACH ROW UPDATE detailteam
+ SET quantity_soccer = (
+        SELECT COUNT(*) FROM soccer WHERE team_id = OLD.team_id and status = 1
+    )
+    WHERE detailteam.id = OLD.team_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `update_soccer_detailteam2` AFTER UPDATE ON `soccer` FOR EACH ROW BEGIN
+    -- Update quantity_soccer for the new team_id
+    UPDATE detailteam 
+    SET quantity_soccer = (
+        SELECT COUNT(*) FROM soccer WHERE team_id = NEW.team_id and status = 1
     )
     WHERE detailteam.id = NEW.team_id;
 END
