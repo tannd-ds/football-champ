@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+use function Laravel\Prompts\table;
+
 class SeasonController extends Controller
 {  
     // Trang xem toàn bộ mùa giải
@@ -73,5 +76,24 @@ class SeasonController extends Controller
 }
 catch(\Exception $e){
     return response()->json(['error' => 'Failed to delete season: ' . $e->getMessage()], 500);    }
+    }
+    // Register season
+    public function register_into_season(Request $request){
+        try {
+            $team_id = $request->input('team_id');
+            $season_id = $request->input('season_id');
+            $date_signin = $request->input('date_signin');
+            $quantity_team = DB::table('detailteam')->select('quantity_soccer')->where('id', $team_id)->first();
+            if ($quantity_team && isset($quantity_team->quantity_soccer) && $quantity_team->quantity_soccer >= 15 && $quantity_team->quantity_soccer <= 20) {
+                $data = array('season_id' => $season_id, 'team_id' => $team_id, 'date_signin' => $date_signin);
+                DB::table('listteam')->insert($data);
+                return response()->json('Thành công', 200);
+            } else {
+                return response()->json('Số lượng cầu thủ không hợp lệ', 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json('Lỗi không xác định xảy ra', 500);
+        }
+
     }
 }

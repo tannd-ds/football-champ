@@ -27,6 +27,8 @@ Route::get('/season/edit/{id}', 'App\Http\Controllers\SeasonController@edit_seas
 Route::post('/season/update/{id}', 'App\Http\Controllers\SeasonController@update');
 
 Route::get('/season/delete/{id}', 'App\Http\Controllers\SeasonController@delete');
+
+Route::post('/register/into_season','App\Http\Controllers\SeasonController@register_into_season');
 // Team route
 Route::get('/team', 'App\Http\Controllers\TeamController@index');
 
