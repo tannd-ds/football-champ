@@ -89,9 +89,13 @@ catch(\Exception $e){
             if ($quantity_team && isset($quantity_team->quantity_soccer) && $quantity_team->quantity_soccer >= 15 && $quantity_team->quantity_soccer <= 20) {
                 $data = array('season_id' => $season_id, 'team_id' => $team_id, 'date_signin' => $date_signin,'status' => $status);
                 DB::table('listteam')->insert($data);
-                return response()->json('Thành công', 200);
+                return response()->json(200);
             } else {
-                return response()->json('Số lượng cầu thủ không hợp lệ', 500);
+                $reponse=[
+                    'content'=> 'Số lượng cầu thủ phải trong khoảng 15 tới 20',
+                    'code' => 500,
+                ];
+                return response()->json($reponse);
             }
         } catch (\Exception $e) {
             return response()->json('Lỗi không xác định xảy ra', 500);
