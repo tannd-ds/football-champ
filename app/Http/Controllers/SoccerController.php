@@ -92,4 +92,21 @@ public function unban($id){
             return response()->json($e);
 }
 }
+public function delete($id){
+    try{ 
+        $data = array('team_id'=> null);
+        DB::table('soccer')->where('id',$id)->update($data);
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+}
+}
 }

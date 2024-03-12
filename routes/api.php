@@ -54,6 +54,8 @@ Route::get('/soccer/ban/{id}', 'App\Http\Controllers\SoccerController@ban');
 
 Route::get('/soccer/unban/{id}', 'App\Http\Controllers\SoccerController@unban');
  
+Route::get('/soccer/delete/{id}', 'App\Http\Controllers\SoccerController@delete');
+
 
 //Match route
 Route::get('/match/{id}', 'App\Http\Controllers\MatchController@index');
