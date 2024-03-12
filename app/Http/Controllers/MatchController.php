@@ -88,5 +88,52 @@ class MatchController extends Controller
             return response()->json($e);
         }
     }
+    
+    // Chi tiết trận đấu 
+    public function detailmatch($id){
+        $data = DB::table('detailschedule')->join('detailteam','detailteam.id','=','detailschedule.team_id')->join('soccer','soccer.id','=','detailschedule.soccer_id')->where('detailschedule.schedule_id',$id)->get();
+        return response()->json($data);
+    }
+
+    public function add_detailmatch (Request $request){
+        try{
+            $schedule_id=$request->input('schedule_id');
+            $soccer_id=$request->input('soccer_id');
+            $team_id=$request->input('team_id');
+            $category_goal=$request->input('category_goal');
+            $time_goal = $request -> input('time_goal');
+            $data = array('schedule_is' => $schedule_id, 'soccer_id' => $soccer_id, 'team_id' => $team_id, 'category_goal'=> $category_goal , 'time_goal' => $time_goal);
+            DB::table('detailschedule')->insert($data);
+            $e = [
+                'content'=> 'success',
+                'code'=>200,
+            ];
+            return response()->json($e);}
+            catch (\Exception $e) {
+                $e = [
+                    'content'=> 'fail',
+                    'code'=>500,
+                ];
+                return response()->json($e);
+            }
+    }
+    public function delete_detailmatch($id){
+        try{
+        DB::table('detailschedule')->where('id',$id)->delete();
+        $e = [
+            'content'=> 'success',
+            'code'=>200,
+        ];
+        return response()->json($e);}
+        catch (\Exception $e) {
+            $e = [
+                'content'=> 'fail',
+                'code'=>500,
+            ];
+            return response()->json($e);
+        }
+    }
+
+    
 
 }

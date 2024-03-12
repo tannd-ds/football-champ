@@ -75,3 +75,11 @@ Route::get('/register/accept/{id}', 'App\Http\Controllers\RegistrationFormContro
 
 Route::get('/register/refuse/{id}', 'App\Http\Controllers\RegistrationFormController@refuse');
 
+//Detailschedule route
+Route::get('/match/detailschedule/{id}', 'App\Http\Controllers\MatchController@detailmatch');
+
+Route::post('/match/detailschedule/add', 'App\Http\Controllers\MatchController@add_detailmatch');
+
+Route::get('/match/detailschedule/delete/{id}', 'App\Http\Controllers\MatchController@delete_detailmatch');
+
+
