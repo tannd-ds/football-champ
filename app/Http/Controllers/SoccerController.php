@@ -34,7 +34,7 @@ class SoccerController extends Controller
     }
     //edit
     public function edit_soccer($id){
-        $soccer = DB::table('soccer')->join('detailteam','soccer.team_id','=','detailteam.id')->where('soccer.id',$id)->get();
+        $soccer = DB::table('soccer')->leftjoin('detailteam','soccer.team_id','=','detailteam.id')->where('soccer.id',$id)->get();
         return response()->json($soccer);
     }
     //update
