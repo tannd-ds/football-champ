@@ -92,9 +92,14 @@ Route::get('/login', 'App\Http\Controllers\UserController@login');
 
 Route::post('/register', 'App\Http\Controllers\UserController@register');
 
+Route::post('/create_team/{id}', 'App\Http\Controllers\UserController@create_team');
+
 Route::get('/user', 'App\Http\Controllers\UserController@index');
 
 Route::get('/user/edit/{id}', 'App\Http\Controllers\UserController@edit_user');
+
+Route::post('/user/update/{id}', 'App\Http\Controllers\UserController@update');
+
 
 
 
