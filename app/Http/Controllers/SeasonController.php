@@ -40,8 +40,8 @@ class SeasonController extends Controller
                 ];
                 return response()->json($e);
             }
-    }
-    // Trang chỉnh sửa
+        }
+        // Trang chỉnh sửa
     public function edit_season($id)
     {
         $edit_season = DB::table('season')->where('id', $id)->get();
@@ -100,6 +100,12 @@ class SeasonController extends Controller
             return response()->json($e);
         }
     }
+    // Season activite
+    public function register_season()
+    {   $now = date('y-m-d');
+        $data = DB::table('season')->where('start_date','>',$now)->get();
+        return response()->json($data);
+    }
     // Register season
     public function register_into_season(Request $request){
         try {
@@ -133,4 +139,5 @@ class SeasonController extends Controller
         }
 
     }
+    
 }
