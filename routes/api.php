@@ -88,7 +88,7 @@ Route::post('/match/detailschedule/add', 'App\Http\Controllers\MatchController@a
 Route::get('/match/detailschedule/delete/{id}', 'App\Http\Controllers\MatchController@delete_detailmatch');
 
 //user route
-Route::get('/login', 'App\Http\Controllers\UserController@login');
+Route::post('/login', 'App\Http\Controllers\UserController@login');
 
 Route::post('/register', 'App\Http\Controllers\UserController@register');
 

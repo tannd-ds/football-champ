@@ -34,7 +34,7 @@ class UserController extends Controller
         $user_email = $request -> input('user_email');
         $user_password = $request -> input('user_password');
             $check = DB::table('user')->where('user_email',$user_email)->get();
-            if(empty($check)){
+            if(!empty($check)){
                 $e = [
                     'content'=> 'Tài khoản đã tồn tại',
                     'code'=>500,
