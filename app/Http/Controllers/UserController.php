@@ -33,8 +33,9 @@ class UserController extends Controller
         $user_name = $request -> input('user_name');
         $user_email = $request -> input('user_email');
         $user_password = $request -> input('user_password');
+        $user_rule = $request -> input('rule');
             $check = DB::table('user')->where('user_email',$user_email)->get();
-            if(!empty($check)){
+            if(!$check->isEmpty()){
                 $e = [
                     'content'=> 'Tài khoản đã tồn tại',
                     'code'=>500,
@@ -42,7 +43,12 @@ class UserController extends Controller
                 return response()->json($e);
             }
             else{
-        $data = array('user_name' => $user_name, 'user_email' => $user_email, 'user_password' => $user_password );
+        $data = array(
+                'user_name' => $user_name, 
+                'user_email' => $user_email, 
+                'user_password' => $user_password,
+                'rule' => $user_rule,
+            );
             DB::table('user')->insert($data);
             $e = [
                 'content'=> 'success',
