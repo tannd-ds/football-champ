@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th3 11, 2024 lúc 10:38 AM
+-- Thời gian đã tạo: Th3 16, 2024 lúc 04:30 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -148,6 +148,12 @@ CREATE TRIGGER `delete_detailteam_listteam` AFTER DELETE ON `detailteam` FOR EAC
 WHERE listteam.team_id = OLD.id
 $$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `delete_detailteam_user` AFTER DELETE ON `detailteam` FOR EACH ROW UPDATE user
+SET team_id = null
+WHERE team_id = OLD.id
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -173,6 +179,13 @@ DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `delete_listteam_schedule` AFTER DELETE ON `listteam` FOR EACH ROW DELETE FROM schedule
 where (team_id_1 = old.team_id OR team_id_2= old.team_id) AND season_id=old.season_id
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `insert_listteam_result` AFTER INSERT ON `listteam` FOR EACH ROW IF NEW.status = 1 THEN
+        INSERT INTO `result` (`id`, `season_id`, `team_id`, `win`, `lose`, `draw`, `total`) 
+        VALUES (NULL, NEW.season_id, NEW.team_id, 0, 0, 0, 0);
+    END IF
 $$
 DELIMITER ;
 DELIMITER $$
@@ -385,6 +398,21 @@ END
 $$
 DELIMITER ;
 
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL,
+  `user_name` varchar(50) NOT NULL,
+  `user_email` varchar(255) NOT NULL,
+  `user_password` varchar(255) NOT NULL,
+  `team_id` int(11) DEFAULT NULL,
+  `rule` int(11) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Chỉ mục cho các bảng đã đổ
 --
@@ -432,6 +460,12 @@ ALTER TABLE `soccer`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
@@ -475,6 +509,12 @@ ALTER TABLE `season`
 -- AUTO_INCREMENT cho bảng `soccer`
 --
 ALTER TABLE `soccer`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `user`
+--
+ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
